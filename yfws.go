@@ -20,11 +20,11 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 	local := yfrequest.Request
 
 	// Check that all vars are filled
-	for _, param := range yfrequest.Params {
-		if _, ok := params[param]; ok {
+	for _, name := range yfrequest.Params {
+		if value, ok := params[name]; ok {
 			local = strings.Replace(local, name, value, -1)
 		} else {
-			return response, fmt.Errorf("Could not find value for param %s", param)
+			return response, fmt.Errorf("Could not find value for param %s", name)
 		}
 	}
 

@@ -7,8 +7,8 @@ type yfRequest struct {
 	Resource string
 }
 
-var yfRequests = map[string]*YFRequest{
-	"changepassword": &YFRequest{
+var yfRequests = map[string]*yfRequest{
+	"changepassword": &yfRequest{
 		Request: changepassword,
 		Params: []string{
 			"%ADMIN%",
@@ -19,7 +19,7 @@ var yfRequests = map[string]*YFRequest{
 		Call:     "remoteAdministrationCall",
 		Resource: "",
 	},
-	"createuser": &YFRequest{
+	"createuser": &yfRequest{
 		Request: createuser,
 		Params: []string{
 			"%ADMIN%",
@@ -33,7 +33,7 @@ var yfRequests = map[string]*YFRequest{
 		Call:     "remoteAdministrationCall",
 		Resource: "",
 	},
-	"deletecontent": &YFRequest{
+	"deletecontent": &yfRequest{
 		Request: deletecontent,
 		Params: []string{
 			"%ADMIN%",
@@ -44,7 +44,7 @@ var yfRequests = map[string]*YFRequest{
 		Call:     "remoteAdministrationCall",
 		Resource: "",
 	},
-	"getcontent": &YFRequest{
+	"getcontent": &yfRequest{
 		Request: getcontent,
 		Params: []string{
 			"%ADMIN%",
@@ -53,7 +53,7 @@ var yfRequests = map[string]*YFRequest{
 		Call:     "remoteAdministrationCall",
 		Resource: "contentResources",
 	},
-	"getreport": &YFRequest{
+	"getreport": &yfRequest{
 		Request: getreport,
 		Params: []string{
 			"%ADMIN%",
@@ -65,7 +65,7 @@ var yfRequests = map[string]*YFRequest{
 		Call:     "remoteReportCall",
 		Resource: "charts",
 	},
-	"importcontent": &YFRequest{
+	"importcontent": &yfRequest{
 		Request: importcontent,
 		Params: []string{
 			"%ADMIN%",
@@ -75,7 +75,7 @@ var yfRequests = map[string]*YFRequest{
 		Call:     "remoteAdministrationCall",
 		Resource: "",
 	},
-	"login": &YFRequest{
+	"login": &yfRequest{
 		Request: login,
 		Params: []string{
 			"%ADMIN%",
@@ -85,7 +85,7 @@ var yfRequests = map[string]*YFRequest{
 		Call:     "remoteAdministrationCall",
 		Resource: "",
 	},
-	"logout": &YFRequest{
+	"logout": &yfRequest{
 		Request: logout,
 		Params: []string{
 			"%ADMIN%",
@@ -96,7 +96,7 @@ var yfRequests = map[string]*YFRequest{
 		Call:     "remoteAdministrationCall",
 		Resource: "",
 	},
-	"schema": &YFRequest{
+	"schema": &yfRequest{
 		Request: schema,
 		Params: []string{
 			"%ADMIN%",
@@ -106,7 +106,7 @@ var yfRequests = map[string]*YFRequest{
 		Call:     "remoteReportCall",
 		Resource: "columns",
 	},
-	"updateuser": &YFRequest{
+	"updateuser": &yfRequest{
 		Request: updateuser,
 		Params: []string{
 			"%ADMIN%",
