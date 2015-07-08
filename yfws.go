@@ -45,9 +45,9 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 		return response, err
 	}
 
-	err = parseResponse(&m, &response, "remoteAdministrationCall", "contentResources")
+	err = parseResponse(&m, &response, yfrequest.Call, yfrequest.Resource)
 	if err != nil {
-		return response, fmt.Errorf("Parse Response failed : %v", err)
+		return response, fmt.Errorf("Parse Response failed : %v %s %s", err, yfrequest.Call, yfrequest.Resource)
 	}
 	return response, nil
 
@@ -82,7 +82,7 @@ func parseResponse(m *mxj.Map, response *[]mxj.Map, responsename, idmapname stri
 	if idmapname != "" {
 		ids, err := valuemap.ValuesForPath(idmapname + "." + idmapname)
 		if err != nil {
-			return err
+			return fmt.Errorf("Could not find %s.%s %v", idmapname, idmapname, err)
 		}
 		for _, id := range ids {
 			idmap := mxj.Map(id.(map[string]interface{}))
@@ -93,7 +93,7 @@ func parseResponse(m *mxj.Map, response *[]mxj.Map, responsename, idmapname stri
 
 			multiref, err := m.ValuesForKey("multiRef", "-id:"+idvalue[1:])
 			if err != nil {
-				return err
+				return fmt.Errorf("Could not find multiref for id %s, %v", idvalue[1:], err)
 			}
 			if len(multiref) == 0 {
 				return fmt.Errorf("mutilRef element not found for id : %s", idvalue[1:])
