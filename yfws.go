@@ -12,19 +12,20 @@ import (
 func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 	response := make([]mxj.Map, 0)
 
-	// Check that all vars are filled
-	yfrequest, ok := YFRequests[msg]
+	yfrequest, ok := yfRequests[msg]
 	if !ok {
 		return response, fmt.Errorf("Could not find soap for %s", msg)
 	}
+
+	local := yfrequest.Request
+
+	// Check that all vars are filled
 	for _, param := range yfrequest.Params {
-		if _, ok := params[param]; !ok {
+		if _, ok := params[param]; ok {
+			local = strings.Replace(local, name, value, -1)
+		} else {
 			return response, fmt.Errorf("Could not find value for param %s", param)
 		}
-	}
-	local := yfrequest.Request
-	for name, value := range params {
-		local = strings.Replace(local, name, value, -1)
 	}
 
 	req, err := http.NewRequest("POST", url, strings.NewReader(local))

@@ -39,5 +39,18 @@ Typical usage will be :
 
 Please see 	"github.com/clbanning/mxj" for further information
 
+Currently the following calls are implemented:
+changepassword   
+createuser       
+deletecontent    
+getcontent       
+getreport        
+importcontent    
+login            
+logout           
+schema           
+updateuser       
+
+
 */	
 package yfws

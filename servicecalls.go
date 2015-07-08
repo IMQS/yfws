@@ -1,19 +1,45 @@
 package yfws
 
-type YFRequest struct {
-	Request   string
-	Params []string
-	Call      string
-	Resource  string
+type yfRequest struct {
+	Request  string
+	Params   []string
+	Call     string
+	Resource string
 }
 
-var YFRequests = map[string]*YFRequest{
-	"importcontent": &YFRequest{
-		Request: importcontent,
+var yfRequests = map[string]*YFRequest{
+	"changepassword": &YFRequest{
+		Request: changepassword,
 		Params: []string{
 			"%ADMIN%",
 			"%PASSWORD%",
-			"%DATA%",
+			"%USERID%",
+			"%USERPASSWORD%",
+		},
+		Call:     "remoteAdministrationCall",
+		Resource: "",
+	},
+	"createuser": &YFRequest{
+		Request: createuser,
+		Params: []string{
+			"%ADMIN%",
+			"%PASSWORD%",
+			"%EMAIL%",
+			"%FIRSTNAME%",
+			"%LASTNAME%",
+			"%USERPASSWORD%",
+			"%USERID%",
+		},
+		Call:     "remoteAdministrationCall",
+		Resource: "",
+	},
+	"deletecontent": &YFRequest{
+		Request: deletecontent,
+		Params: []string{
+			"%ADMIN%",
+			"%PASSWORD%",
+			"%FUNCTION%",
+			"%ID%",
 		},
 		Call:     "remoteAdministrationCall",
 		Resource: "",
@@ -27,13 +53,24 @@ var YFRequests = map[string]*YFRequest{
 		Call:     "remoteAdministrationCall",
 		Resource: "contentResources",
 	},
-	"deletecontent": &YFRequest{
-		Request: deletecontent,
+	"getreport": &YFRequest{
+		Request: getreport,
 		Params: []string{
 			"%ADMIN%",
 			"%PASSWORD%",
-			"%FUNCTION%",
-			"%ID%",
+			"%REPORTID%",
+			"%FILTERID%",
+			"%FILTERVALUE%",
+		},
+		Call:     "remoteReportCall",
+		Resource: "charts",
+	},
+	"importcontent": &YFRequest{
+		Request: importcontent,
+		Params: []string{
+			"%ADMIN%",
+			"%PASSWORD%",
+			"%DATA%",
 		},
 		Call:     "remoteAdministrationCall",
 		Resource: "",
@@ -43,6 +80,17 @@ var YFRequests = map[string]*YFRequest{
 		Params: []string{
 			"%ADMIN%",
 			"%PASSWORD%",
+			"%USER%",
+		},
+		Call:     "remoteAdministrationCall",
+		Resource: "",
+	},
+	"logout": &YFRequest{
+		Request: logout,
+		Params: []string{
+			"%ADMIN%",
+			"%PASSWORD%",
+			"%SESSIONID%",
 			"%USER%",
 		},
 		Call:     "remoteAdministrationCall",
@@ -58,20 +106,21 @@ var YFRequests = map[string]*YFRequest{
 		Call:     "remoteReportCall",
 		Resource: "columns",
 	},
-	"getreport": &YFRequest{
-		Request: getreport,
+	"updateuser": &YFRequest{
+		Request: updateuser,
 		Params: []string{
 			"%ADMIN%",
 			"%PASSWORD%",
-			"%REPORTID%",
-			"%FILTERID%",
-			"%FILTERVALUE%",
+			"%ROLE%",
+			"%USERID%",
 		},
-		Call:     "remoteReportCall",
-		Resource: "charts",
+		Call:     "remoteAdministrationCall",
+		Resource: "",
 	},
 }
 
+
+// These error were copied from the yellowfin wiki site.
 var yferrors = map[int]string{
 	-2: "UNKNOWN_ERROR",
 	-1: "CANNOT_CONNECT",
@@ -217,5 +266,87 @@ const getreport = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema
             </filters>
          </in0>
       </ser:remoteReportCall>
+   </soapenv:Body>
+</soapenv:Envelope>`
+
+const createuser = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.web.mi.hof.com" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:remoteAdministrationCall soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+         <in0 xsi:type="ser:AdministrationServiceRequest">
+            <function xsi:type="xsd:string">ADDUSER</function>
+            <loginId xsi:type="xsd:string">%ADMIN%</loginId>
+            <orgId xsi:type="xsd:int">1</orgId>
+            <password xsi:type="xsd:string">%PASSWORD%</password>
+            <person xsi:type="ser:AdministrationPerson">
+               <emailAddress xsi:type="xsd:string">%EMAIL%</emailAddress>
+               <firstName xsi:type="xsd:string">%FIRSTNAME%</firstName>
+               <initial xsi:type="xsd:string"></initial>
+               <ipId xsi:type="xsd:int"></ipId>
+               <languageCode xsi:type="xsd:string"></languageCode>
+               <lastName xsi:type="xsd:string">%LASTNAME%</lastName>
+               <password xsi:type="xsd:string">%USERPASSWORD%</password>
+               <roleCode xsi:type="xsd:string">YFREPORTCONSUMER</roleCode>
+               <salutationCode xsi:type="xsd:string">DR</salutationCode>
+               <timeZoneCode xsi:type="xsd:string"></timeZoneCode>
+               <userId xsi:type="xsd:string">%USERID%</userId>
+            </person>
+         </in0>
+      </ser:remoteAdministrationCall>
+   </soapenv:Body>
+</soapenv:Envelope>`
+
+const changepassword = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.web.mi.hof.com" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:remoteAdministrationCall soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+         <in0 xsi:type="ser:AdministrationServiceRequest">
+            <function xsi:type="xsd:string">CHANGEPASSWORD</function>
+            <loginId xsi:type="xsd:string">%ADMIN%</loginId>
+            <orgId xsi:type="xsd:int">1</orgId>
+            <password xsi:type="xsd:string">%PASSWORD%</password>
+            <person xsi:type="ser:AdministrationPerson">
+               <userId xsi:type="xsd:string">%USERID%</userId>
+               <password xsi:type="xsd:string">%USERPASSWORD%</password>
+            </person>
+         </in0>
+      </ser:remoteAdministrationCall>
+   </soapenv:Body>
+</soapenv:Envelope>`
+
+const updateuser = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.web.mi.hof.com" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:remoteAdministrationCall soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+         <in0 xsi:type="ser:AdministrationServiceRequest">
+            <function xsi:type="xsd:string">UPDATEUSER</function>
+            <loginId xsi:type="xsd:string">%ADMIN%</loginId>
+            <orgId xsi:type="xsd:int">1</orgId>
+            <password xsi:type="xsd:string">%PASSWORD%</password>
+            <person xsi:type="ser:AdministrationPerson">
+               <roleCode xsi:type="xsd:string">%ROLE%</roleCode>
+               <userId xsi:type="xsd:string">%USERID%</userId>
+            </person>
+         </in0>
+      </ser:remoteAdministrationCall>
+   </soapenv:Body>
+</soapenv:Envelope>`
+
+const logout = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.web.mi.hof.com" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:remoteAdministrationCall soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+         <in0 xsi:type="ser:AdministrationServiceRequest">
+            <function xsi:type="xsd:string">LOGOUTUSER</function>
+            <loginId xsi:type="xsd:string">%ADMIN%</loginId>
+            <orgId xsi:type="xsd:int">1</orgId>
+            <orgRef xsi:type="xsd:string">Default</orgRef>
+            <password xsi:type="xsd:string">%PASSWORD%</password>
+            <loginSessionId xsi:type="xsd:string">%SESSIONID%</loginSessionId>
+            <person xsi:type="ser:AdministrationPerson">
+               <userId xsi:type="xsd:string">%USER%</userId>
+            </person>
+         </in0>
+      </ser:remoteAdministrationCall>
    </soapenv:Body>
 </soapenv:Envelope>`
