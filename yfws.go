@@ -5,16 +5,14 @@ import (
 	"fmt"
 	"github.com/clbanning/mxj"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
 func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
-	response := make([]mxj.Map, 0)
 
 	yfrequest, ok := yfRequests[msg]
 	if !ok {
-		return response, fmt.Errorf("Could not find soap for %s", msg)
+		return nil, fmt.Errorf("Could not find request for %s", msg)
 	}
 
 	local := yfrequest.Request
@@ -24,13 +22,13 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 		if value, ok := params[name]; ok {
 			local = strings.Replace(local, name, value, -1)
 		} else {
-			return response, fmt.Errorf("Could not find value for param %s", name)
+			return nil, fmt.Errorf("Could not find value for param %s", name)
 		}
 	}
 
 	req, err := http.NewRequest("POST", url, strings.NewReader(local))
 	if err != nil {
-		return response, err
+		return nil, err
 	}
 	req.Header.Add("Content-Type", "text/xml;charset=UTF-8")
 	req.Header.Add("SOAPAction", `""`)
@@ -38,17 +36,22 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return response, err
+		return nil, err
+	}
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("Yellowfin Error: HTTP Code %v", resp.StatusCode)
 	}
 	m, err := mxj.NewMapXmlReader(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return response, err
+		return nil, err
 	}
+
+	response := make([]mxj.Map, 0)
 
 	err = parseResponse(&m, &response, yfrequest.Call, yfrequest.Resource)
 	if err != nil {
-		return response, fmt.Errorf("Parse Response failed : %v %s %s", err, yfrequest.Call, yfrequest.Resource)
+		return nil, err
 	}
 	return response, nil
 
@@ -77,9 +80,9 @@ func parseResponse(m *mxj.Map, response *[]mxj.Map, responsename, idmapname stri
 
 	if statuscode != "SUCCESS" {
 		errcode, _ := valuemap.ValueForPathString("errorCode.#text")
-		errcodeint, _ := strconv.Atoi(errcode)
-		return fmt.Errorf("Yellowfin Error (%s) : %s", errcode, yferrors[errcodeint])
+		return YFErrors[errcode]
 	}
+
 	if idmapname != "" {
 		ids, err := valuemap.ValuesForPath(idmapname + "." + idmapname)
 		if err != nil {
@@ -101,6 +104,9 @@ func parseResponse(m *mxj.Map, response *[]mxj.Map, responsename, idmapname stri
 			}
 			*response = append(*response, mxj.Map(multiref[0].(map[string]interface{})))
 		}
+	} else {
+		// Add the original back, this is to get responses such as sessionid etc.
+		*response = append(*response, valuemap)
 	}
 	return nil
 
