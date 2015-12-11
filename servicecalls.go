@@ -65,6 +65,16 @@ var yfRequests = map[string]*yfRequest{
 		Call:     "remoteReportCall",
 		Resource: "charts",
 	},
+	"getallreports": &yfRequest{
+		Request: getallreports,
+		Params: []string{
+			"%ADMIN%",
+			"%PASSWORD%",
+			"%USER%",
+		},
+		Call:     "remoteReportCall",
+		Resource: "reports",
+	},
 	"importcontent": &yfRequest{
 		Request: importcontent,
 		Params: []string{
@@ -219,6 +229,23 @@ const getreport = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema
             </filters>
          </in0>
       </ser:remoteReportCall>
+   </soapenv:Body>
+</soapenv:Envelope>`
+
+const getallreports = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.web.mi.hof.com" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:remoteAdministrationCall soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+         <in0 xsi:type="ser:AdministrationServiceRequest">
+            <function xsi:type="xsd:string">GETALLUSERREPORTS</function>
+            <loginId xsi:type="xsd:string">%ADMIN%</loginId>
+            <orgId xsi:type="xsd:int">1</orgId>
+            <password xsi:type="xsd:string">%PASSWORD%</password>
+            <person xsi:type="ser:AdministrationPerson">
+               <userId xsi:type="xsd:string">%USER%</userId>
+            </person>
+         </in0>
+      </ser:remoteAdministrationCall>
    </soapenv:Body>
 </soapenv:Envelope>`
 
