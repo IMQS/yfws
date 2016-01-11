@@ -72,7 +72,7 @@ var yfRequests = map[string]*yfRequest{
 			"%PASSWORD%",
 			"%USER%",
 		},
-		Call:     "remoteReportCall",
+		Call:     "remoteAdministrationCall",
 		Resource: "reports",
 	},
 	"importcontent": &yfRequest{

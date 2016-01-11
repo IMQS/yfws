@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/clbanning/mxj"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -25,7 +26,6 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 			return nil, fmt.Errorf("Could not find value for param %s", name)
 		}
 	}
-
 	req, err := http.NewRequest("POST", url, strings.NewReader(local))
 	if err != nil {
 		return nil, err
@@ -39,6 +39,9 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
+		bdy, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println(string(bdy))
+		resp.Body.Close()
 		return nil, fmt.Errorf("Yellowfin Error: HTTP Code %v", resp.StatusCode)
 	}
 	m, err := mxj.NewMapXmlReader(resp.Body)
