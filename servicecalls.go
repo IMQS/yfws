@@ -92,7 +92,8 @@ var yfRequests = map[string]*yfRequest{
 			"%PASSWORD%",
 			"%USER%",
 			"%CONTENTCATEGORY%",
-			"%SOURCEACCESS%",
+			"%SCENARIOFILTER%",
+			"%GLOBALFILTERS%",
 		},
 		Call:     "remoteAdministrationCall",
 		Resource: "",
@@ -194,7 +195,8 @@ const login = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-ins
             </person>
             <parameters xsi:type="ser:ArrayOf_soapenc_string" soapenc:arrayType="xsd:string[]">
                <item xsd:type="xsd:string">%CONTENTCATEGORY%</item>
-               <item xsd:type="xsd:string">%SOURCEACCESS%</item>
+               <item xsd:type="xsd:string">%SCENARIOFILTER%</item>
+               %GLOBALFILTERS%
             </parameters>
          </in0>
       </ser:remoteAdministrationCall>
