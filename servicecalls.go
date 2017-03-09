@@ -194,6 +194,7 @@ const login = `<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-ins
                <userId xsi:type="xsd:string">%USER%</userId>
             </person>
             <parameters xsi:type="ser:ArrayOf_soapenc_string" soapenc:arrayType="xsd:string[]">
+               <item xsd:type="xsd:string">ENTRY=BROWSE</item>
                <item xsd:type="xsd:string">%CONTENTCATEGORY%</item>
                <item xsd:type="xsd:string">%SCENARIOFILTER%</item>
                %GLOBALFILTERS%
