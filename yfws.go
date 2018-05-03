@@ -1,6 +1,7 @@
 package yfws
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/clbanning/mxj"
@@ -26,6 +27,7 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 			return nil, fmt.Errorf("Could not find value for param %s", name)
 		}
 	}
+	
 	req, err := http.NewRequest("POST", url, strings.NewReader(local))
 	if err != nil {
 		return nil, err
@@ -44,9 +46,16 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 		resp.Body.Close()
 		return nil, fmt.Errorf("Yellowfin Error: HTTP Code %v", resp.StatusCode)
 	}
-	m, err := mxj.NewMapXmlReader(resp.Body)
-	resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Printf("%v", err)
+		return nil, err
+	}
+	resp.Body.Close()
+	m, err := mxj.NewMapXmlReader(bytes.NewReader(body))
+	if err != nil {
+		fmt.Printf("Oh crap 1")
+		fmt.Printf("%V\n", body)
 		return nil, err
 	}
 
@@ -54,6 +63,7 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 
 	err = parseResponse(&m, &response, yfrequest.Call, yfrequest.Resource)
 	if err != nil {
+		fmt.Printf("Oh crap 2")
 		return nil, err
 	}
 	return response, nil
