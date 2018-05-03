@@ -48,14 +48,11 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("%v", err)
 		return nil, err
 	}
 	resp.Body.Close()
 	m, err := mxj.NewMapXmlReader(bytes.NewReader(body))
 	if err != nil {
-		fmt.Printf("Oh crap 1")
-		fmt.Printf("%V\n", body)
 		return nil, err
 	}
 
@@ -63,7 +60,6 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 
 	err = parseResponse(&m, &response, yfrequest.Call, yfrequest.Resource)
 	if err != nil {
-		fmt.Printf("Oh crap 2")
 		return nil, err
 	}
 	return response, nil
