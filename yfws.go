@@ -47,13 +47,13 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("request error HTTP %d ->\n\n%s", resp.StatusCode, m.StringIndent(0))
+		return nil, fmt.Errorf("request error HTTP %d ->\n%s", resp.StatusCode, parseError(m))
 	}
 
 	return parseResponse(m, yfrequest.Call, yfrequest.Resource)
 }
 
-// Parse response from Yellowfin service after making request
+// Parse response from Yellowfin service after making request.
 func parseResponse(m mxj.Map, responsename, idmapname string) ([]mxj.Map, error) {
 	path := fmt.Sprintf("Envelope.Body.%sResponse.%sReturn.-href", responsename, responsename)
 	mainid, err := m.ValueForPathString(path)
@@ -109,4 +109,14 @@ func parseResponse(m mxj.Map, responsename, idmapname string) ([]mxj.Map, error)
 	}
 
 	return response, nil
+}
+
+// Parse error response from Yellowfin service after failed request.
+func parseError(m mxj.Map) string {
+	errMsg, err := m.ValueForPathString("Envelope.Body.Fault.faultstring")
+	if err != nil {
+		return m.StringIndentNoTypeInfo(0)
+	}
+
+	return errMsg
 }
