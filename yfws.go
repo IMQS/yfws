@@ -3,6 +3,7 @@ package yfws
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -40,8 +41,15 @@ func SendRequest(url, msg string, params map[string]string) ([]mxj.Map, error) {
 		return nil, err
 	}
 
-	m, err := mxj.NewMapXmlReader(resp.Body)
+	// Read body first to close early, instead of passing to mxj.NewXmlReader.
+	// Apparently causes less YF errors.
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 	resp.Body.Close()
+
+	m, err := mxj.NewMapXml(body)
 	if err != nil {
 		return nil, err
 	}
